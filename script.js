@@ -197,6 +197,15 @@ function setupNavigation() {
   });
 }
 
+function setupBackToTop() {
+  document.querySelectorAll('a[href="#top"]').forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    });
+  });
+}
+
 function setupReveal() {
   const targets = document.querySelectorAll(".section-kicker, .about-photo, .about-copy, .gallery-item, .contact-intro, .booking-panel");
   targets.forEach((target) => target.setAttribute("data-reveal", ""));
