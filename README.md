@@ -7,7 +7,7 @@ Add eight optimized JPGs to `images/` with the exact filenames listed in [images
 
 ## Edit model details
 
-Update the `MODEL` object at the top of `script.js`. Set the city, bio, measurements, contact details, and socials there. Add only confirmed shows, shoots, or brands to `experience`; its section stays hidden while the list is empty. Replace `comp-card.pdf` with the finished PDF before sharing.
+Update the `MODEL` object at the top of `script.js`. Set the city, bio, measurements, contact details, and socials there. Replace `[CITY]` with the correct city and keep the bio in a polished, truthful tone. Add only confirmed shows, shoots, or brands to `experience`; its section stays hidden while the list is empty. Replace `comp-card.pdf` with the finished PDF before sharing.
 
 ## Deploy to Netlify
 

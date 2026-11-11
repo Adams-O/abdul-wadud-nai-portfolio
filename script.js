@@ -2,9 +2,9 @@
 const MODEL = {
   name: "Abdul Wadud Nai",
   country: "Ghana",
-  city: "City to be added",
-  type: "Editorial / fashion",
-  bio: "Abdul Wadud Nai is a fashion and editorial model based in Ghana. For bookings, portfolio collaborations, and availability, contact him directly.",
+  city: "[CITY]",
+  type: "Editorial / Fashion",
+  bio: "Abdul Wadud Nai is a Ghana-based fashion and editorial model with a strong, refined presence and a polished visual point of view. His clean silhouette and expressive styling make him a natural fit for fashion editorials, campaigns, and contemporary portrait work.",
   measurements: { Height: "6 ft 3 in", Chest: "43 in", Waist: "35 in", "Shoe size": "43 EU", Hair: "Black", Eyes: "Black" },
   phone: "+233503917926",
   email: "wadudnayi@gmail.com",
