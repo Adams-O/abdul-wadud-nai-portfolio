@@ -136,30 +136,45 @@ function setupBookingForm() {
   const form = document.querySelector("[data-booking-form]");
   const status = document.querySelector("[data-form-status]");
   const success = document.querySelector("[data-form-success]");
+  const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+
   function showSuccess() {
     form.hidden = true;
     success.hidden = false;
     history.replaceState(null, "", `${location.pathname}${location.hash}`);
   }
+
   if (new URLSearchParams(location.search).has("success")) showSuccess();
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (!form.reportValidity()) return;
-    status.textContent = "Sending your enquiry…";
-    const body = new URLSearchParams(new FormData(form));
-    try {
-      const response = await fetch(form.action, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body.toString() });
-      if (!response.ok) throw new Error("Booking form submission failed");
-      status.textContent = "";
-      showSuccess();
-    } catch {
-      status.textContent = "Your enquiry could not be sent. Please try again or contact Abdul directly.";
-    }
-  });
+
+  if (isLocal) {
+    status.textContent = "Bookings are sent from the live Netlify site. Deploy the project, then submit the form there to receive email notifications.";
+    form.addEventListener("submit", (event) => {
+      if (!form.reportValidity()) return;
+      event.preventDefault();
+      status.textContent = "This form works on the live Netlify URL. Submit it there to send your booking request.";
+    });
+  } else {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      status.textContent = "Sending your enquiry…";
+      const body = new URLSearchParams(new FormData(form));
+      try {
+        const response = await fetch(form.action, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body.toString() });
+        if (!response.ok) throw new Error("Booking form submission failed");
+        status.textContent = "";
+        showSuccess();
+      } catch {
+        status.textContent = "Your enquiry could not be sent. Please try again or contact Abdul directly.";
+      }
+    });
+  }
+
   document.querySelector("[data-new-enquiry]").addEventListener("click", () => {
     form.reset();
     form.hidden = false;
     success.hidden = true;
+    status.textContent = isLocal ? "Bookings are sent from the live Netlify site. Deploy the project, then submit the form there to receive email notifications." : "";
   });
 }
 
