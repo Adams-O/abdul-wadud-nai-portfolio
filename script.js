@@ -1,58 +1,54 @@
-// Keep editable model details together here.
 const MODEL = {
   name: "Abdul Wadud Nai",
   country: "Ghana",
   city: "[CITY]",
   type: "Editorial / Fashion",
   bio: "Abdul Wadud Nai is a Ghana-based fashion and editorial model with a strong, refined presence and a polished visual point of view. His clean silhouette and expressive styling make him a natural fit for fashion editorials, campaigns, and contemporary portrait work.",
-  measurements: { Height: "6 ft 3 in", Chest: "43 in", Waist: "35 in", "Shoe size": "43 EU", Hair: "Black", Eyes: "Black" },
+  measurements: { Height: "6 ft 3 in", Chest: "43", Waist: "35", Shoe: "43 (EU)", Hair: "Black", Eyes: "Black" },
   phone: "+233503917926",
   email: "wadudnayi@gmail.com",
   instagram: "https://instagram.com/bold_nai",
   tiktok: "https://tiktok.com/@boldnayi",
-  whatsappMessage: "Hello Abdul, I found your portfolio and would like to book you.",
-  experience: []
+  whatsappMessage: "Hello Abdul, I found your portfolio and would like to book you."
 };
 
 const PHOTOS = [
-  { file: "abdul-wadud-nai-01.jpg", title: "Portrait", category: "editorial", ratio: "4 / 5" },
-  { file: "abdul-wadud-nai-02.jpg", title: "Editorial study", category: "editorial", ratio: "3 / 4" },
-  { file: "abdul-wadud-nai-03.jpg", title: "Street portrait", category: "street", ratio: "4 / 5" },
-  { file: "abdul-wadud-nai-04.jpg", title: "Form and light", category: "editorial", ratio: "4 / 5" },
-  { file: "abdul-wadud-nai-05.jpg", title: "Street style", category: "street", ratio: "3 / 4" },
-  { file: "abdul-wadud-nai-06.jpg", title: "Editorial", category: "editorial", ratio: "4 / 5" },
-  { file: "abdul-wadud-nai-07.jpg", title: "On location", category: "street", ratio: "3 / 4" },
-  { file: "abdul-wadud-nai-08.jpg", title: "Portrait study", category: "editorial", ratio: "4 / 5" }
+  { file: "abdul-wadud-nai-01.jpg", title: "Portrait", category: "editorial", width: 962, height: 1280 },
+  { file: "abdul-wadud-nai-02.jpg", title: "Editorial study", category: "editorial", width: 954, height: 1280 },
+  { file: "abdul-wadud-nai-03.jpg", title: "Street portrait", category: "street", width: 868, height: 1280 },
+  { file: "abdul-wadud-nai-04.jpg", title: "Form and light", category: "editorial", width: 868, height: 1280 },
+  { file: "abdul-wadud-nai-05.jpg", title: "Street style", category: "street", width: 900, height: 1280 },
+  { file: "abdul-wadud-nai-06.jpg", title: "Editorial", category: "editorial", width: 950, height: 1280 },
+  { file: "abdul-wadud-nai-07.jpg", title: "On location", category: "street", width: 930, height: 1280 },
+  { file: "abdul-wadud-nai-08.jpg", title: "Portrait study", category: "editorial", width: 930, height: 1280 }
 ];
 
 const WHATSAPP_URL = `https://wa.me/${MODEL.phone.replace(/\D/g, "")}?text=${encodeURIComponent(MODEL.whatsappMessage)}`;
 
 function renderModelDetails() {
-  const [firstName, ...restOfName] = MODEL.name.trim().split(/\s+/);
-  document.querySelector("[data-first-name]").textContent = firstName;
-  document.querySelector("[data-rest-name]").textContent = restOfName.join(" ");
   document.querySelectorAll("[data-name]").forEach((element) => { element.textContent = MODEL.name; });
   document.querySelectorAll("[data-country]").forEach((element) => { element.textContent = MODEL.country; });
-  document.querySelector("[data-model-type]").textContent = MODEL.type;
-  document.querySelector("[data-location-label]").textContent = `— ${[MODEL.city, MODEL.country].filter(Boolean).join(", ")}`;
   document.title = `${MODEL.name} | Model, ${MODEL.country}`;
   document.querySelector('meta[property="og:title"]').content = document.title;
-  document.querySelector(".hero-photo img").alt = `${MODEL.name}, fashion model`;
-  document.querySelector(".about-photo img").alt = `Portrait of ${MODEL.name}`;
   document.querySelector("[data-bio]").textContent = MODEL.bio;
   document.querySelector("[data-location]").textContent = [MODEL.city, MODEL.country].filter(Boolean).join(" / ");
   document.querySelector("[data-measurements]").innerHTML = Object.entries(MODEL.measurements).map(([label, value]) => `
-    <div class="measure-item"><span>${label}</span><strong>${value}</strong></div>`).join("");
+    <div class="measure-item"><dt>${label}</dt><dd>${value}</dd></div>`).join("");
   document.querySelectorAll("[data-call]").forEach((link) => { link.href = `tel:${MODEL.phone}`; });
   document.querySelectorAll("[data-whatsapp]").forEach((link) => { link.href = WHATSAPP_URL; });
-  document.querySelector("[data-email-link]").href = `mailto:${MODEL.email}`;
-  document.querySelector("[data-email-link]").textContent = MODEL.email;
+  const emailLink = document.querySelector("[data-email-link]");
+  emailLink.href = `mailto:${MODEL.email}`;
+  emailLink.textContent = MODEL.email;
   document.querySelector("[data-instagram]").href = MODEL.instagram;
   document.querySelector("[data-tiktok]").href = MODEL.tiktok;
 }
 
 function markMissingPhoto(image) {
-  image.closest("[data-photo-frame]")?.classList.add("photo-missing");
+  const frame = image.closest("[data-photo-frame], .about-image, .hero");
+  frame?.classList.add("photo-missing");
+  if (frame && !frame.querySelector(".photo-placeholder")) {
+    frame.insertAdjacentHTML("beforeend", '<span class="photo-placeholder" aria-hidden="true">Image unavailable</span>');
+  }
   image.hidden = true;
 }
 
@@ -61,13 +57,15 @@ function renderGallery() {
   const galleryNote = document.querySelector(".gallery-note");
   let settledPhotos = 0;
   let availablePhotos = 0;
+
   gallery.innerHTML = PHOTOS.map((photo, index) => `
-    <button class="gallery-item" type="button" data-photo-index="${index}" data-category="${photo.category}" aria-label="Open ${photo.title}, ${photo.category}">
-      <span class="gallery-image photo-frame" data-photo-frame style="--photo-ratio:${photo.ratio}">
-        <img src="images/${photo.file}" alt="${MODEL.name}, ${photo.title.toLowerCase()}" loading="lazy" decoding="async">
-        <span class="photo-placeholder" aria-hidden="true">ADD PHOTO ${String(index + 1).padStart(2, "0")}</span>
-      </span><span class="gallery-caption"><span>${photo.title}</span><span>${photo.category}</span></span>
+    <button class="gallery-item reveal" type="button" data-photo-index="${index}" data-category="${photo.category}" aria-label="Open ${photo.title}, ${photo.category}">
+      <span class="gallery-image" data-photo-frame style="--photo-ratio:${photo.width} / ${photo.height}">
+        <img src="images/${photo.file}" alt="${MODEL.name}, ${photo.title.toLowerCase()}" width="${photo.width}" height="${photo.height}" loading="lazy" decoding="async">
+      </span>
+      <span class="gallery-caption"><span>${photo.title}</span><span>${photo.category}</span></span>
     </button>`).join("");
+
   gallery.querySelectorAll("img").forEach((image) => {
     image.addEventListener("load", () => {
       settledPhotos++;
@@ -80,14 +78,6 @@ function renderGallery() {
       if (settledPhotos === PHOTOS.length && !availablePhotos) galleryNote.hidden = false;
     }, { once: true });
   });
-}
-
-function renderExperience() {
-  if (!MODEL.experience.length) return;
-  document.querySelector("#experience").hidden = false;
-  document.querySelector("[data-experience-link]").hidden = false;
-  document.querySelector("[data-timeline]").innerHTML = MODEL.experience.map((item) => `
-    <li><time>${item.year}</time><div><strong>${item.title}</strong><span>${item.description}</span></div></li>`).join("");
 }
 
 function setupFilters() {
@@ -109,13 +99,19 @@ function setupLightbox() {
   const figure = document.querySelector("[data-lightbox-figure]");
   const count = document.querySelector("[data-lightbox-count]");
   let currentIndex = 0;
+  let touchStartX = 0;
+
   function showPhoto(index) {
     currentIndex = (index + PHOTOS.length) % PHOTOS.length;
     const photo = PHOTOS[currentIndex];
-    figure.innerHTML = `<img src="images/${photo.file}" alt="${MODEL.name}, ${photo.title.toLowerCase()}"><span class="photo-placeholder" aria-hidden="true">ADD PHOTO ${String(currentIndex + 1).padStart(2, "0")}</span><figcaption>${photo.title} <span>· ${photo.category}</span></figcaption>`;
-    figure.querySelector("img").addEventListener("error", (event) => { event.currentTarget.hidden = true; }, { once: true });
+    figure.innerHTML = `<img src="images/${photo.file}" alt="${MODEL.name}, ${photo.title.toLowerCase()}" width="${photo.width}" height="${photo.height}"><figcaption>${photo.title} <span>· ${photo.category}</span></figcaption>`;
+    figure.querySelector("img").addEventListener("error", (event) => {
+      event.currentTarget.hidden = true;
+      figure.insertAdjacentHTML("afterbegin", '<p class="lightbox-missing">Photo unavailable</p>');
+    }, { once: true });
     count.textContent = `${String(currentIndex + 1).padStart(2, "0")} / ${String(PHOTOS.length).padStart(2, "0")}`;
   }
+
   document.querySelector("[data-gallery]").addEventListener("click", (event) => {
     const item = event.target.closest("[data-photo-index]");
     if (!item) return;
@@ -130,6 +126,12 @@ function setupLightbox() {
     if (event.key === "ArrowLeft") showPhoto(currentIndex - 1);
     if (event.key === "ArrowRight") showPhoto(currentIndex + 1);
   });
+  dialog.addEventListener("touchstart", (event) => { touchStartX = event.changedTouches[0].screenX; }, { passive: true });
+  dialog.addEventListener("touchend", (event) => {
+    const distance = event.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(distance) < 45) return;
+    showPhoto(currentIndex + (distance < 0 ? 1 : -1));
+  }, { passive: true });
 }
 
 function setupBookingForm() {
@@ -151,12 +153,14 @@ function setupBookingForm() {
     form.addEventListener("submit", (event) => {
       if (!form.reportValidity()) return;
       event.preventDefault();
+      status.dataset.state = "";
       status.textContent = "This form works on the live Netlify URL. Submit it there to send your booking request.";
     });
   } else {
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
+      status.dataset.state = "";
       status.textContent = "Sending your enquiry…";
       const body = new URLSearchParams(new FormData(form));
       try {
@@ -165,6 +169,7 @@ function setupBookingForm() {
         status.textContent = "";
         showSuccess();
       } catch {
+        status.dataset.state = "error";
         status.textContent = "Your enquiry could not be sent. Please try again or contact Abdul directly.";
       }
     });
@@ -174,6 +179,7 @@ function setupBookingForm() {
     form.reset();
     form.hidden = false;
     success.hidden = true;
+    status.dataset.state = "";
     status.textContent = isLocal ? "Bookings are sent from the live Netlify site. Deploy the project, then submit the form there to receive email notifications." : "";
   });
 }
@@ -181,6 +187,15 @@ function setupBookingForm() {
 function setupNavigation() {
   const toggle = document.querySelector(".menu-toggle");
   const nav = document.querySelector(".main-nav");
+  const header = document.querySelector(".site-header");
+
+  function closeMenu() {
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Open menu");
+    nav.classList.remove("is-open");
+    document.body.classList.remove("menu-open");
+  }
+
   toggle.addEventListener("click", () => {
     const open = toggle.getAttribute("aria-expanded") !== "true";
     toggle.setAttribute("aria-expanded", String(open));
@@ -189,12 +204,83 @@ function setupNavigation() {
     document.body.classList.toggle("menu-open", open);
   });
   nav.addEventListener("click", (event) => {
-    if (!event.target.closest("a")) return;
-    toggle.setAttribute("aria-expanded", "false");
-    toggle.setAttribute("aria-label", "Open menu");
-    nav.classList.remove("is-open");
-    document.body.classList.remove("menu-open");
+    if (event.target.closest("a")) closeMenu();
   });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeMenu();
+  });
+
+  function updateHeader() {
+    header.classList.toggle("is-scrolled", window.scrollY > 24);
+  }
+  updateHeader();
+  window.addEventListener("scroll", updateHeader, { passive: true });
+}
+
+function setupThemeToggle() {
+  const toggle = document.querySelector("[data-theme-toggle]");
+  const root = document.documentElement;
+  const themeColor = document.querySelector("[data-theme-color]");
+
+  function applyTheme(theme) {
+    root.dataset.theme = theme;
+    themeColor.content = getComputedStyle(root).getPropertyValue("--bg").trim();
+    toggle.setAttribute("aria-label", `Switch to ${theme === "dark" ? "light" : "dark"} mode`);
+  }
+
+  applyTheme(root.dataset.theme === "dark" ? "dark" : "light");
+  toggle.addEventListener("click", () => {
+    const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
+    root.dataset.themePreference = "user";
+    try {
+      localStorage.setItem("abdul-theme", nextTheme);
+    } catch {
+      // Theme still changes for this page view when storage is unavailable.
+    }
+    applyTheme(nextTheme);
+  });
+
+  const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+  systemTheme.addEventListener?.("change", (event) => {
+    if (root.dataset.themePreference === "system") applyTheme(event.matches ? "dark" : "light");
+  });
+}
+
+function setupRevealAndParallax() {
+  const targets = document.querySelectorAll(".reveal");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduceMotion || !("IntersectionObserver" in window)) {
+    targets.forEach((target) => target.classList.add("is-visible"));
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries, currentObserver) => entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("is-visible");
+      currentObserver.unobserve(entry.target);
+    }
+  }), { threshold: 0.1 });
+  targets.forEach((target) => observer.observe(target));
+
+  const galleryItems = [...document.querySelectorAll(".gallery-item")];
+  let frameRequested = false;
+  function updateParallax() {
+    frameRequested = false;
+    const viewportHeight = window.innerHeight;
+    galleryItems.forEach((item) => {
+      if (item.hidden) return;
+      const bounds = item.getBoundingClientRect();
+      const distance = (bounds.top + bounds.height / 2 - viewportHeight / 2) / viewportHeight;
+      const offset = Math.max(-10, Math.min(10, -distance * 8));
+      item.style.setProperty("--parallax-y", `${offset.toFixed(1)}px`);
+    });
+  }
+  window.addEventListener("scroll", () => {
+    if (frameRequested) return;
+    frameRequested = true;
+    window.requestAnimationFrame(updateParallax);
+  }, { passive: true });
+  updateParallax();
 }
 
 function setupBackToTop() {
@@ -206,29 +292,16 @@ function setupBackToTop() {
   });
 }
 
-function setupReveal() {
-  const targets = document.querySelectorAll(".section-kicker, .about-photo, .about-copy, .gallery-item, .contact-intro, .booking-panel");
-  targets.forEach((target) => target.setAttribute("data-reveal", ""));
-  if (!("IntersectionObserver" in window)) {
-    targets.forEach((target) => target.classList.add("is-visible"));
-    return;
-  }
-  const observer = new IntersectionObserver((entries, currentObserver) => entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("is-visible");
-      currentObserver.unobserve(entry.target);
-    }
-  }), { threshold: 0.12 });
-  targets.forEach((target) => observer.observe(target));
-}
-
-document.querySelectorAll(".photo-frame img").forEach((image) => image.addEventListener("error", () => markMissingPhoto(image), { once: true }));
+document.querySelectorAll(".hero-photo, .about-image img").forEach((image) => {
+  image.addEventListener("error", () => markMissingPhoto(image), { once: true });
+});
 renderModelDetails();
 renderGallery();
-renderExperience();
 setupFilters();
 setupLightbox();
 setupBookingForm();
 setupNavigation();
-setupReveal();
+setupThemeToggle();
+setupBackToTop();
+setupRevealAndParallax();
 document.querySelector("[data-year]").textContent = new Date().getFullYear();
