@@ -1,5 +1,5 @@
 # abdul-wadud-nai-portfolio
-Portfolio website for Abdul Wadud Nai, a male fashion model from Ghana. Photo gallery, comp card, booking form, tap-to-call and WhatsApp buttons. Built with HTML, CSS and JavaScript, hosted on Netlify.
+Portfolio website for Abdul Wadud Nayi, a male fashion model from Ghana. Photo gallery, designed comp card, booking form, tap-to-call and WhatsApp buttons. Built with HTML, CSS and JavaScript, hosted on Netlify.
 
 ## Add your photos
 
@@ -7,7 +7,7 @@ Add eight optimized JPGs to `images/` with the exact filenames listed in [images
 
 ## Edit model details
 
-Update the `MODEL` object at the top of `script.js`. Set the city, bio, measurements, contact details, and socials there. Replace `[CITY]` with the correct city and keep the bio in a polished, truthful tone. Add only confirmed shows, shoots, or brands to `experience`; its section stays hidden while the list is empty. Replace `comp-card.pdf` with the finished PDF before sharing.
+Update the `MODEL` object at the top of `script.js`. Set the city, bio, measurements, contact details, and socials there. Replace `[CITY]` with the correct city and keep the bio in a polished, truthful tone. Add only confirmed shows, shoots, or brands to `experience`; its section stays hidden while the list is empty. Review `comp-card.pdf` and replace it if the details or portrait need updating.
 
 ## Deploy to Netlify
 

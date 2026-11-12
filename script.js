@@ -1,10 +1,10 @@
 const MODEL = {
-  name: "Abdul Wadud Nai",
+  name: "Abdul Wadud Nayi",
   country: "Ghana",
   city: "[CITY]",
   type: "Editorial / Fashion",
-  bio: "Abdul Wadud Nai is a Ghana-based fashion and editorial model with a strong, refined presence and a polished visual point of view. His clean silhouette and expressive styling make him a natural fit for fashion editorials, campaigns, and contemporary portrait work.",
-  measurements: { Height: "6 ft 3 in", Chest: "43", Waist: "35", Shoe: "43 (EU)", Hair: "Black", Eyes: "Black" },
+  bio: "Abdul Wadud Nayi is a Ghana-based fashion and editorial model with a strong, refined presence and a polished visual point of view. His clean silhouette and expressive styling make him a natural fit for fashion editorials, campaigns, and contemporary portrait work.",
+  measurements: { Height: "6 ft 3 in", Chest: "43 in", Waist: "35 in", Shoe: "EU 43", Hair: "Black", Eyes: "Black" },
   phone: "+233503917926",
   email: "wadudnayi@gmail.com",
   instagram: "https://instagram.com/bold_nai",
