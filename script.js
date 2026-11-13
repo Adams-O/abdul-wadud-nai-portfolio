@@ -1,9 +1,9 @@
 const MODEL = {
   name: "Abdul Wadud Nayi",
   country: "Ghana",
-  city: "[CITY]",
+  city: "[Accra]",
   type: "Editorial / Fashion",
-  bio: "Abdul Wadud Nayi is a Ghana-based fashion and editorial model with a strong, refined presence and a polished visual point of view. His clean silhouette and expressive styling make him a natural fit for fashion editorials, campaigns, and contemporary portrait work.",
+  bio: "Abdul Wadud Abdul Nayi is a Ghana-based fashion and editorial model with a strong, refined presence and a polished visual point of view. His clean silhouette and expressive styling make him a natural fit for fashion editorials, campaigns, and contemporary portrait work.",
   measurements: { Height: "6 ft 3 in", Chest: "43 in", Waist: "35 in", Shoe: "EU 43", Hair: "Black", Eyes: "Black" },
   phone: "+233503917926",
   email: "wadudnayi@gmail.com",
@@ -134,11 +134,17 @@ function setupLightbox() {
   }, { passive: true });
 }
 
+
+
 function setupBookingForm() {
   const form = document.querySelector("[data-booking-form]");
   const status = document.querySelector("[data-form-status]");
   const success = document.querySelector("[data-form-success]");
-  const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+
+  const SUPABASE_URL = "https://tqshzbexwdadlsvfwyqn.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_-50WqWqW_ONMm_-JX7lq4g_iP7ZoWuk";
+
+  const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/send-booking`;
 
   function showSuccess() {
     form.hidden = true;
@@ -146,43 +152,69 @@ function setupBookingForm() {
     history.replaceState(null, "", `${location.pathname}${location.hash}`);
   }
 
-  if (new URLSearchParams(location.search).has("success")) showSuccess();
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  if (isLocal) {
-    status.textContent = "Bookings are sent from the live Netlify site. Deploy the project, then submit the form there to receive email notifications.";
-    form.addEventListener("submit", (event) => {
-      if (!form.reportValidity()) return;
-      event.preventDefault();
-      status.dataset.state = "";
-      status.textContent = "This form works on the live Netlify URL. Submit it there to send your booking request.";
-    });
-  } else {
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (!form.reportValidity()) return;
-      status.dataset.state = "";
-      status.textContent = "Sending your enquiry…";
-      const body = new URLSearchParams(new FormData(form));
-      try {
-        const response = await fetch(form.action, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body.toString() });
-        if (!response.ok) throw new Error("Booking form submission failed");
-        status.textContent = "";
-        showSuccess();
-      } catch {
-        status.dataset.state = "error";
-        status.textContent = "Your enquiry could not be sent. Please try again or contact Abdul directly.";
+    if (!form.reportValidity()) return;
+
+    if (form.elements["bot-field"].value.trim()) return;
+
+    const submitButton = form.querySelector('[type="submit"]');
+
+    submitButton.disabled = true;
+    status.dataset.state = "";
+    status.textContent = "Sending your enquiry...";
+
+    const formData = new FormData(form);
+
+    const booking = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      phone: formData.get("phone"),
+      job_type: formData.get("job-type"),
+      shoot_date: formData.get("shoot-date") || null,
+      message: formData.get("message")
+    };
+
+    try {
+      const response = await fetch(FUNCTION_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_PUBLISHABLE_KEY
+        },
+        body: JSON.stringify(booking)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Booking submission failed.");
       }
-    });
-  }
+
+      status.textContent = "";
+      showSuccess();
+
+    } catch (error) {
+      console.error("Booking error:", error);
+      status.dataset.state = "error";
+      status.textContent =
+        "Your enquiry could not be sent. Please try again or contact Abdul directly.";
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
 
   document.querySelector("[data-new-enquiry]").addEventListener("click", () => {
     form.reset();
     form.hidden = false;
     success.hidden = true;
     status.dataset.state = "";
-    status.textContent = isLocal ? "Bookings are sent from the live Netlify site. Deploy the project, then submit the form there to receive email notifications." : "";
+    status.textContent = "";
   });
 }
+
+
 
 function setupNavigation() {
   const toggle = document.querySelector(".menu-toggle");
