@@ -1,5 +1,6 @@
 const MODEL = {
   name: "Abdul Wadud Nayi",
+  brand: "Bold Nayi",
   country: "Ghana",
   city: "[Accra]",
   type: "Editorial / Fashion",
@@ -28,7 +29,7 @@ const WHATSAPP_URL = `https://wa.me/${MODEL.phone.replace(/\D/g, "")}?text=${enc
 function renderModelDetails() {
   document.querySelectorAll("[data-name]").forEach((element) => { element.textContent = MODEL.name; });
   document.querySelectorAll("[data-country]").forEach((element) => { element.textContent = MODEL.country; });
-  document.title = `${MODEL.name} | Model, ${MODEL.country}`;
+  document.title = `${MODEL.brand} | Model, ${MODEL.country}`;
   document.querySelector('meta[property="og:title"]').content = document.title;
   document.querySelector("[data-bio]").textContent = MODEL.bio;
   document.querySelector("[data-location]").textContent = [MODEL.city, MODEL.country].filter(Boolean).join(" / ");
