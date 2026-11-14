@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://tqshzbexwdadlsvfwyqn.supabase.co";
-const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+const SUPABASE_KEY = "sb_publishable_-50WqWqW_ONMm_-JX7lq4g_iP7ZoWuk";
 
 const supabase = window.supabase.createClient(
   SUPABASE_URL,
@@ -20,7 +20,7 @@ const MODEL = {
   whatsappMessage: "Hello Abdul, I found your portfolio and would like to book you."
 };
 
-const PHOTOS = [
+let PHOTOS = [
   { file: "abdul-wadud-nai-01.jpg", title: "Portrait", category: "editorial", width: 962, height: 1280 },
   { file: "abdul-wadud-nai-02.jpg", title: "Editorial study", category: "editorial", width: 954, height: 1280 },
   { file: "abdul-wadud-nai-03.jpg", title: "Street portrait", category: "street", width: 868, height: 1280 },
@@ -32,6 +32,55 @@ const PHOTOS = [
 ];
 
 const WHATSAPP_URL = `https://wa.me/${MODEL.phone.replace(/\D/g, "")}?text=${encodeURIComponent(MODEL.whatsappMessage)}`;
+
+
+async function loadCMSContent() {
+  // Load the latest model profile
+  const { data: profile, error: profileError } = await supabase
+    .from("model_profile")
+    .select("*")
+    .order("id", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!profileError && profile) {
+    MODEL.name = profile.name || MODEL.name;
+    MODEL.brand = profile.brand || MODEL.brand;
+    MODEL.country = profile.country || MODEL.country;
+    MODEL.city = profile.city || MODEL.city;
+    MODEL.bio = profile.bio || MODEL.bio;
+    MODEL.email = profile.email || MODEL.email;
+    MODEL.phone = profile.phone || MODEL.phone;
+
+    MODEL.measurements = {
+      Height: profile.height || MODEL.measurements.Height,
+      Chest: profile.chest || MODEL.measurements.Chest,
+      Waist: profile.waist || MODEL.measurements.Waist,
+      Shoe: profile.shoe || MODEL.measurements.Shoe,
+      Hair: profile.hair || MODEL.measurements.Hair,
+      Eyes: profile.eyes || MODEL.measurements.Eyes
+    };
+  }
+
+  // Load visible portfolio photos
+  const { data: photos, error: photosError } = await supabase
+    .from("portfolio_photos")
+    .select("*")
+    .eq("is_visible", true)
+    .order("display_order", { ascending: true });
+
+  if (!photosError && photos && photos.length > 0) {
+    PHOTOS = photos.map((photo) => ({
+      image_url: photo.image_url,
+      title: photo.title,
+      category: photo.category || "editorial",
+      width: 900,
+      height: 1280
+    }));
+  }
+}
+
+
 
 function renderModelDetails() {
   document.querySelectorAll("[data-name]").forEach((element) => { element.textContent = MODEL.name; });
@@ -69,7 +118,7 @@ function renderGallery() {
   gallery.innerHTML = PHOTOS.map((photo, index) => `
     <button class="gallery-item reveal" type="button" data-photo-index="${index}" data-category="${photo.category}" aria-label="Open ${photo.title}, ${photo.category}">
       <span class="gallery-image" data-photo-frame style="--photo-ratio:${photo.width} / ${photo.height}">
-        <img src="images/${photo.file}" alt="${MODEL.name}, ${photo.title.toLowerCase()}" width="${photo.width}" height="${photo.height}" loading="lazy" decoding="async">
+        <img src="${photo.image_url || `images/${photo.file}`}" alt="${MODEL.name}, ${photo.title.toLowerCase()}" width="${photo.width || 900}" height="${photo.height || 1280}" loading="lazy" decoding="async">
       </span>
       <span class="gallery-caption"><span>${photo.title}</span><span>${photo.category}</span></span>
     </button>`).join("");
@@ -318,13 +367,22 @@ function setupBackToTop() {
 document.querySelectorAll(".hero-photo, .about-image img").forEach((image) => {
   image.addEventListener("error", () => markMissingPhoto(image), { once: true });
 });
-renderModelDetails();
-renderGallery();
-setupFilters();
-setupLightbox();
-setupBookingForm();
-setupNavigation();
-setupThemeToggle();
-setupBackToTop();
-setupRevealAndParallax();
-document.querySelector("[data-year]").textContent = new Date().getFullYear();
+
+async function startWebsite() {
+  await loadCMSContent();
+
+  renderModelDetails();
+  renderGallery();
+  setupFilters();
+  setupLightbox();
+  setupBookingForm();
+  setupNavigation();
+  setupThemeToggle();
+  setupBackToTop();
+  setupRevealAndParallax();
+
+  document.querySelector("[data-year]").textContent =
+    new Date().getFullYear();
+}
+
+startWebsite();
