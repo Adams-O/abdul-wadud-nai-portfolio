@@ -1,3 +1,10 @@
+const SUPABASE_URL = "https://tqshzbexwdadlsvfwyqn.supabase.co";
+const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 const MODEL = {
   name: "Abdul Wadud Nayi",
   brand: "Bold Nayi",
