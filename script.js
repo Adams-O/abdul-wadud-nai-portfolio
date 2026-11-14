@@ -1,10 +1,13 @@
 const SUPABASE_URL = "https://tqshzbexwdadlsvfwyqn.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-50WqWqW_ONMm_-JX7lq4g_iP7ZoWuk";
 
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const supabaseClient = typeof window.supabase?.createClient === "function"
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
+
+if (!supabaseClient) {
+  console.error("Supabase JS did not load. The public site will use its local fallback content.");
+}
 const MODEL = {
   name: "Abdul Wadud Nayi",
   brand: "Bold Nayi",
@@ -30,54 +33,76 @@ let PHOTOS = [
   { file: "abdul-wadud-nai-07.jpg", title: "On location", category: "street", width: 930, height: 1280 },
   { file: "abdul-wadud-nai-08.jpg", title: "Portrait study", category: "editorial", width: 930, height: 1280 }
 ];
+let revealObserver = null;
+let galleryRenderId = 0;
 
-const WHATSAPP_URL = `https://wa.me/${MODEL.phone.replace(/\D/g, "")}?text=${encodeURIComponent(MODEL.whatsappMessage)}`;
+function getWhatsAppUrl() {
+  return `https://wa.me/${MODEL.phone.replace(/\D/g, "")}?text=${encodeURIComponent(MODEL.whatsappMessage)}`;
+}
 
 
 async function loadCMSContent() {
-  // Load the latest model profile
-  const { data: profile, error: profileError } = await supabase
-    .from("model_profile")
-    .select("*")
-    .order("id", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  if (!supabaseClient) return false;
 
-  if (!profileError && profile) {
-    MODEL.name = profile.name || MODEL.name;
-    MODEL.brand = profile.brand || MODEL.brand;
-    MODEL.country = profile.country || MODEL.country;
-    MODEL.city = profile.city || MODEL.city;
-    MODEL.bio = profile.bio || MODEL.bio;
-    MODEL.email = profile.email || MODEL.email;
-    MODEL.phone = profile.phone || MODEL.phone;
+  let hasContent = false;
 
-    MODEL.measurements = {
-      Height: profile.height || MODEL.measurements.Height,
-      Chest: profile.chest || MODEL.measurements.Chest,
-      Waist: profile.waist || MODEL.measurements.Waist,
-      Shoe: profile.shoe || MODEL.measurements.Shoe,
-      Hair: profile.hair || MODEL.measurements.Hair,
-      Eyes: profile.eyes || MODEL.measurements.Eyes
-    };
+  try {
+    const { data: profile, error } = await supabaseClient
+      .from("model_profile")
+      .select("*")
+      .order("id", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Could not load the model profile from Supabase:", error);
+    } else if (profile) {
+      MODEL.name = profile.name || MODEL.name;
+      MODEL.brand = profile.brand || MODEL.brand;
+      MODEL.country = profile.country || MODEL.country;
+      MODEL.city = profile.city || MODEL.city;
+      MODEL.bio = profile.bio || MODEL.bio;
+      MODEL.email = profile.email || MODEL.email;
+      MODEL.phone = profile.phone || MODEL.phone;
+
+      MODEL.measurements = {
+        Height: profile.height || MODEL.measurements.Height,
+        Chest: profile.chest || MODEL.measurements.Chest,
+        Waist: profile.waist || MODEL.measurements.Waist,
+        Shoe: profile.shoe || MODEL.measurements.Shoe,
+        Hair: profile.hair || MODEL.measurements.Hair,
+        Eyes: profile.eyes || MODEL.measurements.Eyes
+      };
+      hasContent = true;
+    }
+  } catch (error) {
+    console.error("Could not load the model profile from Supabase:", error);
   }
 
-  // Load visible portfolio photos
-  const { data: photos, error: photosError } = await supabase
-    .from("portfolio_photos")
-    .select("*")
-    .eq("is_visible", true)
-    .order("display_order", { ascending: true });
+  try {
+    const { data: photos, error } = await supabaseClient
+      .from("portfolio_photos")
+      .select("*")
+      .eq("is_visible", true)
+      .order("display_order", { ascending: true });
 
-  if (!photosError && photos && photos.length > 0) {
-    PHOTOS = photos.map((photo) => ({
-      image_url: photo.image_url,
-      title: photo.title,
-      category: photo.category || "editorial",
-      width: 900,
-      height: 1280
-    }));
+    if (error) {
+      console.error("Could not load portfolio photos from Supabase:", error);
+    } else if (photos?.length) {
+      PHOTOS = photos.map((photo) => ({
+        image_url: photo.image_url,
+        title: photo.title,
+        category: photo.category || "editorial",
+        width: 900,
+        height: 1280
+      }));
+      hasContent = true;
+    }
+  } catch (error) {
+    console.error("Could not load portfolio photos from Supabase:", error);
   }
+
+  return hasContent;
 }
 
 
@@ -92,7 +117,8 @@ function renderModelDetails() {
   document.querySelector("[data-measurements]").innerHTML = Object.entries(MODEL.measurements).map(([label, value]) => `
     <div class="measure-item"><dt>${label}</dt><dd>${value}</dd></div>`).join("");
   document.querySelectorAll("[data-call]").forEach((link) => { link.href = `tel:${MODEL.phone}`; });
-  document.querySelectorAll("[data-whatsapp]").forEach((link) => { link.href = WHATSAPP_URL; });
+  const whatsappUrl = getWhatsAppUrl();
+  document.querySelectorAll("[data-whatsapp]").forEach((link) => { link.href = whatsappUrl; });
   const emailLink = document.querySelector("[data-email-link]");
   emailLink.href = `mailto:${MODEL.email}`;
   emailLink.textContent = MODEL.email;
@@ -112,6 +138,7 @@ function markMissingPhoto(image) {
 function renderGallery() {
   const gallery = document.querySelector("[data-gallery]");
   const galleryNote = document.querySelector(".gallery-note");
+  const renderId = ++galleryRenderId;
   let settledPhotos = 0;
   let availablePhotos = 0;
 
@@ -123,13 +150,25 @@ function renderGallery() {
       <span class="gallery-caption"><span>${photo.title}</span><span>${photo.category}</span></span>
     </button>`).join("");
 
+  if (revealObserver) {
+    gallery.querySelectorAll(".reveal").forEach((item) => revealObserver.observe(item));
+  }
+
+  if (!PHOTOS.length) {
+    galleryNote.hidden = false;
+    return;
+  }
+
+  galleryNote.hidden = true;
   gallery.querySelectorAll("img").forEach((image) => {
     image.addEventListener("load", () => {
+      if (renderId !== galleryRenderId) return;
       settledPhotos++;
       availablePhotos++;
       galleryNote.hidden = true;
     }, { once: true });
     image.addEventListener("error", () => {
+      if (renderId !== galleryRenderId) return;
       markMissingPhoto(image);
       settledPhotos++;
       if (settledPhotos === PHOTOS.length && !availablePhotos) galleryNote.hidden = false;
@@ -159,9 +198,12 @@ function setupLightbox() {
   let touchStartX = 0;
 
   function showPhoto(index) {
+    if (!PHOTOS.length) {
+      return;
+    }
     currentIndex = (index + PHOTOS.length) % PHOTOS.length;
     const photo = PHOTOS[currentIndex];
-    figure.innerHTML = `<img src="images/${photo.file}" alt="${MODEL.name}, ${photo.title.toLowerCase()}" width="${photo.width}" height="${photo.height}"><figcaption>${photo.title} <span>· ${photo.category}</span></figcaption>`;
+    figure.innerHTML = `<img src="${photo.image_url || `images/${photo.file}`}" alt="${MODEL.name}, ${photo.title.toLowerCase()}" width="${photo.width || 900}" height="${photo.height || 1280}"><figcaption>${photo.title} <span>· ${photo.category}</span></figcaption>`;
     figure.querySelector("img").addEventListener("error", (event) => {
       event.currentTarget.hidden = true;
       figure.insertAdjacentHTML("afterbegin", '<p class="lightbox-missing">Photo unavailable</p>');
@@ -326,13 +368,13 @@ function setupRevealAndParallax() {
     return;
   }
 
-  const observer = new IntersectionObserver((entries, currentObserver) => entries.forEach((entry) => {
+  revealObserver = new IntersectionObserver((entries, currentObserver) => entries.forEach((entry) => {
     if (entry.isIntersecting) {
       entry.target.classList.add("is-visible");
       currentObserver.unobserve(entry.target);
     }
   }), { threshold: 0.1 });
-  targets.forEach((target) => observer.observe(target));
+  targets.forEach((target) => revealObserver.observe(target));
 
   const galleryItems = [...document.querySelectorAll(".gallery-item")];
   let frameRequested = false;
@@ -368,9 +410,7 @@ document.querySelectorAll(".hero-photo, .about-image img").forEach((image) => {
   image.addEventListener("error", () => markMissingPhoto(image), { once: true });
 });
 
-async function startWebsite() {
-  await loadCMSContent();
-
+function startWebsite() {
   renderModelDetails();
   renderGallery();
   setupFilters();
@@ -383,6 +423,14 @@ async function startWebsite() {
 
   document.querySelector("[data-year]").textContent =
     new Date().getFullYear();
+
+  void loadCMSContent().then((hasContent) => {
+    if (!hasContent) return;
+    renderModelDetails();
+    renderGallery();
+  }).catch((error) => {
+    console.error("Could not load public CMS content:", error);
+  });
 }
 
 startWebsite();
