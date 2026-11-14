@@ -45,6 +45,7 @@ async function checkAdmin(session) {
 
   await loadProfile();
   await loadPhotos();
+  await loadBookings();
 }
 
 // Check existing login
@@ -240,6 +241,55 @@ document.querySelector("#photo-form").addEventListener("submit", async (event) =
   showMessage("#photo-message", "Photo uploaded successfully.");
   await loadPhotos();
 });
+
+
+// Load booking enquiries
+async function loadBookings() {
+  const list = document.querySelector("#booking-list");
+
+  list.textContent = "Loading bookings...";
+
+  const { data, error } = await supabase
+    .from("appointments")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    list.textContent = "Could not load bookings: " + error.message;
+    return;
+  }
+
+  list.replaceChildren();
+
+  if (!data.length) {
+    list.textContent = "No booking enquiries yet.";
+    return;
+  }
+
+  data.forEach((booking) => {
+    const item = document.createElement("div");
+    item.className = "booking-item";
+
+    const heading = document.createElement("h3");
+    heading.textContent = booking.name || "Unnamed client";
+
+    const details = document.createElement("p");
+    details.textContent =
+      `Email: ${booking.email || "N/A"} | ` +
+      `Phone: ${booking.phone || "N/A"} | ` +
+      `Job: ${booking.job_type || "N/A"} | ` +
+      `Shoot date: ${booking.shoot_date || "N/A"}`;
+
+    const message = document.createElement("p");
+    message.textContent = booking.message || "No message provided.";
+
+    item.append(heading, details, message);
+    list.appendChild(item);
+  });
+}
+
+// Refresh bookings
+document.querySelector("#refresh-bookings").addEventListener("click", loadBookings);
 
 // Load portfolio photos
 async function loadPhotos() {
