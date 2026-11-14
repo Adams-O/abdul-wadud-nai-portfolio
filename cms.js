@@ -281,9 +281,41 @@ async function loadBookings() {
       `Shoot date: ${booking.shoot_date || "N/A"}`;
 
     const message = document.createElement("p");
-    message.textContent = booking.message || "No message provided.";
+message.textContent = booking.message || "No message provided.";
 
-    item.append(heading, details, message);
+const statusLabel = document.createElement("label");
+statusLabel.textContent = "Booking status: ";
+
+const statusSelect = document.createElement("select");
+
+["Pending", "Approved", "Rejected", "Completed"].forEach((status) => {
+  const option = document.createElement("option");
+  option.value = status;
+  option.textContent = status;
+  statusSelect.appendChild(option);
+});
+
+statusSelect.value = booking.status || "Pending";
+
+statusSelect.addEventListener("change", async () => {
+  const { error } = await supabase
+    .from("appointments")
+    .update({ status: statusSelect.value })
+    .eq("id", booking.id);
+
+  if (error) {
+    alert("Could not update booking status: " + error.message);
+    statusSelect.value = booking.status || "Pending";
+    return;
+  }
+
+  booking.status = statusSelect.value;
+  alert("Booking status updated successfully.");
+});
+
+statusLabel.appendChild(statusSelect);
+
+item.append(heading, details, message, statusLabel);
     list.appendChild(item);
   });
 }
