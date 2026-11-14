@@ -139,15 +139,11 @@ function setupLightbox() {
 
 
 
+
 function setupBookingForm() {
   const form = document.querySelector("[data-booking-form]");
   const status = document.querySelector("[data-form-status]");
   const success = document.querySelector("[data-form-success]");
-
-  const SUPABASE_URL = "https://tqshzbexwdadlsvfwyqn.supabase.co";
-  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_-50WqWqW_ONMm_-JX7lq4g_iP7ZoWuk";
-
-  const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/send-booking`;
 
   function showSuccess() {
     form.hidden = true;
@@ -163,36 +159,24 @@ function setupBookingForm() {
     if (form.elements["bot-field"].value.trim()) return;
 
     const submitButton = form.querySelector('[type="submit"]');
-
     submitButton.disabled = true;
     status.dataset.state = "";
     status.textContent = "Sending your enquiry...";
 
-    const formData = new FormData(form);
-
-    const booking = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      job_type: formData.get("job-type"),
-      shoot_date: formData.get("shoot-date") || null,
-      message: formData.get("message")
-    };
-
     try {
-      const response = await fetch(FUNCTION_URL, {
+      const formData = new FormData(form);
+      const encoded = new URLSearchParams(formData).toString();
+
+      const response = await fetch("/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "apikey": SUPABASE_PUBLISHABLE_KEY
+          "Content-Type": "application/x-www-form-urlencoded"
         },
-        body: JSON.stringify(booking)
+        body: encoded
       });
 
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.error || "Booking submission failed.");
+      if (!response.ok) {
+        throw new Error("Booking submission failed.");
       }
 
       status.textContent = "";
