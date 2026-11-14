@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Bold Nayi | Admin CMS</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 30px 16px;
+      background: #f4f4f0;
+      color: #222;
+      font-family: Arial, sans-serif;
+    }
+    main {
+      max-width: 850px;
+      margin: 30px auto;
+    }
+    .panel {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 15px #0000000d;
+    }
+    h1, h2 { margin-top: 0; }
+    label {
+      display: block;
+      margin: 15px 0 6px;
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font: inherit;
+    }
+    button {
+      margin-top: 18px;
+      padding: 12px 20px;
+      background: #222;
+      color: white;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .5; cursor: wait; }
+    .secondary { background: #666; }
+    .message { margin-top: 15px; }
+    #dashboard { display: none; }
+    .photo-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #ddd;
+    }
+    .photo-item img {
+      width: 90px;
+      height: 110px;
+      object-fit: cover;
+      margin-right: 12px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<main>
+  <section class="panel" id="login-panel">
+    <h1>Bold Nayi CMS</h1>
+    <p>Administrator login</p>
+
+    <form id="login-form">
+      <label for="admin-email">Email address</label>
+      <input id="admin-email" type="email" required>
+
+      <label for="admin-password">Password</label>
+      <input id="admin-password" type="password" required>
+
+      <button type="submit">Log in</button>
+    </form>
+    <p class="message" id="login-message" role="status"></p>
+  </section>
+
+  <section id="dashboard">
+    <div class="panel">
+      <h1>Portfolio Dashboard</h1>
+      <p>Manage Abdul's portfolio content.</p>
+      <button type="button" class="secondary" id="logout-button">Log out</button>
+    </div>
+
+    <div class="panel">
+      <h2>Model Profile</h2>
+      <form id="profile-form">
+        <label for="model-name">Name</label>
+        <input id="model-name" required>
+
+        <label for="model-city">City</label>
+        <input id="model-city">
+
+        <label for="model-bio">Biography</label>
+        <textarea id="model-bio" rows="5"></textarea>
+
+        <label for="model-email">Email</label>
+        <input id="model-email" type="email">
+
+        <label for="model-phone">Phone</label>
+        <input id="model-phone">
+
+        <label for="model-height">Height</label>
+        <input id="model-height">
+
+        <label for="model-chest">Chest</label>
+        <input id="model-chest">
+
+        <label for="model-waist">Waist</label>
+        <input id="model-waist">
+
+        <label for="model-shoe">Shoe size</label>
+        <input id="model-shoe">
+
+        <label for="model-hair">Hair</label>
+        <input id="model-hair">
+
+        <label for="model-eyes">Eyes</label>
+        <input id="model-eyes">
+
+        <button type="submit">Save profile</button>
+      </form>
+      <p id="profile-message" class="message" role="status"></p>
+    </div>
+
+    <div class="panel">
+      <h2>Add Portfolio Photo</h2>
+      <form id="photo-form">
+        <label for="photo-title">Photo title</label>
+        <input id="photo-title" required>
+
+        <label for="photo-category">Category</label>
+        <select id="photo-category">
+          <option value="editorial">Editorial</option>
+          <option value="street">Street</option>
+        </select>
+
+        <label for="photo-file">Choose image</label>
+        <input id="photo-file" type="file"
+          accept="image/jpeg,image/png,image/webp" required>
+
+        <button type="submit">Upload photo</button>
+      </form>
+      <p id="photo-message" class="message" role="status"></p>
+    </div>
+
+    <div class="panel">
+      <h2>Portfolio Photos</h2>
+      <div id="photo-list">Loading photos...</div>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="cms.js"></script>
+</body>
+</html>
