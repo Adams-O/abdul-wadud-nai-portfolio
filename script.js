@@ -4,7 +4,7 @@ const MODEL = {
   country: "Ghana",
   city: "[Accra]",
   type: "Editorial / Fashion",
-  bio: "Abdul Wadud Abdul Nayi is a Ghana-based fashion and editorial model with a strong, refined presence and a polished visual point of view. His clean silhouette and expressive styling make him a natural fit for fashion editorials, campaigns, and contemporary portrait work.",
+  bio: "Abdul Wadud Nayi is a Ghanaian-based androgynous fashion, runway, editorial, and beauty model.",
   measurements: { Height: "6 ft 3 in", Chest: "43 in", Waist: "35 in", Shoe: "EU 43", Hair: "Black", Eyes: "Black" },
   phone: "+233503917926",
   email: "wadudnayi@gmail.com",
@@ -21,7 +21,9 @@ const PHOTOS = [
   { file: "abdul-wadud-nai-05.jpg", title: "Street style", category: "street", width: 900, height: 1280 },
   { file: "abdul-wadud-nai-06.jpg", title: "Editorial", category: "editorial", width: 950, height: 1280 },
   { file: "abdul-wadud-nai-07.jpg", title: "On location", category: "street", width: 930, height: 1280 },
-  { file: "abdul-wadud-nai-08.jpg", title: "Portrait study", category: "editorial", width: 930, height: 1280 }
+  { file: "abdul-wadud-nai-08.jpg", title: "Portrait study", category: "editorial", width: 930, height: 1280 },
+  { file: "abdul-wadud-nai-09.jpg", title: "Beauty portrait", category: "beauty", width: 822, height: 1080 },
+  { file: "abdul-wadud-nai-10.jpg", title: "Runway look", category: "runway", width: 888, height: 1280 }
 ];
 
 const WHATSAPP_URL = `https://wa.me/${MODEL.phone.replace(/\D/g, "")}?text=${encodeURIComponent(MODEL.whatsappMessage)}`;

@@ -1,4 +1,4 @@
-Add Abdul's eight optimized photos to this folder using these filenames:
+Add Abdul's ten optimized photos to this folder using these filenames:
 
 - abdul-wadud-nai-01.jpg (hero and first gallery photo)
 - abdul-wadud-nai-02.jpg
@@ -8,5 +8,7 @@ Add Abdul's eight optimized photos to this folder using these filenames:
 - abdul-wadud-nai-06.jpg
 - abdul-wadud-nai-07.jpg
 - abdul-wadud-nai-08.jpg
+- abdul-wadud-nai-09.jpg
+- abdul-wadud-nai-10.jpg
 
 Keep each image below 300 KB. The portfolio will show a neutral placeholder for any missing photo; it never substitutes another person's image.

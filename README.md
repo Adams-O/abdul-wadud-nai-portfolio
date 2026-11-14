@@ -3,7 +3,7 @@ Portfolio website for Abdul Wadud Nayi, a male fashion model from Ghana. Photo g
 
 ## Add your photos
 
-Add eight optimized JPGs to `images/` with the exact filenames listed in [images/README.md](images/README.md). Photo 01 is the hero and about portrait. Keep each file below 300 KB. Missing photos show neutral placeholders, never another person's image. The social share image is photo 01.
+Add ten optimized JPGs to `images/` with the exact filenames listed in [images/README.md](images/README.md). Photo 01 is the hero and about portrait. Keep each file below 300 KB. Missing photos show neutral placeholders, never another person's image. The social share image is photo 01.
 
 ## Edit model details
 
