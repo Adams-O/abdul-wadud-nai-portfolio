@@ -89,13 +89,15 @@ async function loadCMSContent() {
     if (error) {
       console.error("Could not load portfolio photos from Supabase:", error);
     } else if (photos?.length) {
-      PHOTOS = photos.map((photo) => ({
+      const cmsPhotos = photos.map((photo) => ({
         image_url: photo.image_url,
         title: photo.title,
         category: photo.category || "editorial",
         width: 900,
         height: 1280
       }));
+
+      PHOTOS = [...PHOTOS, ...cmsPhotos];
       hasContent = true;
     }
   } catch (error) {
