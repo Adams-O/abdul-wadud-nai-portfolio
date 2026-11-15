@@ -227,7 +227,7 @@ document.querySelector("#photo-form").addEventListener("submit", async (event) =
       title,
       image_url: publicData.publicUrl,
       category,
-      display_order: Date.now(),
+      display_order: Math.floor(Date.now() / 1000),
       is_visible: true
     });
 
