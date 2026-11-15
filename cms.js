@@ -283,29 +283,42 @@ async function loadBookings() {
     const message = document.createElement("p");
 message.textContent = booking.message || "No message provided.";
 
+
 const statusLabel = document.createElement("label");
 statusLabel.textContent = "Booking status: ";
 
 const statusSelect = document.createElement("select");
 
-["Pending", "Approved", "Rejected", "Completed"].forEach((status) => {
+const statusOptions = [
+  { value: "pending", label: "Pending" },
+  { value: "confirmed", label: "Approved" },
+  { value: "declined", label: "Rejected" },
+  { value: "cancelled", label: "Cancelled" }
+];
+
+statusOptions.forEach((status) => {
   const option = document.createElement("option");
-  option.value = status;
-  option.textContent = status;
+  option.value = status.value;
+  option.textContent = status.label;
   statusSelect.appendChild(option);
 });
 
-statusSelect.value = booking.status || "Pending";
+statusSelect.value = booking.status || "pending";
 
 statusSelect.addEventListener("change", async () => {
+  const previousStatus = booking.status || "pending";
+  statusSelect.disabled = true;
+
   const { error } = await supabase
     .from("appointments")
     .update({ status: statusSelect.value })
     .eq("id", booking.id);
 
+  statusSelect.disabled = false;
+
   if (error) {
     alert("Could not update booking status: " + error.message);
-    statusSelect.value = booking.status || "Pending";
+    statusSelect.value = previousStatus;
     return;
   }
 
@@ -314,6 +327,7 @@ statusSelect.addEventListener("change", async () => {
 });
 
 statusLabel.appendChild(statusSelect);
+
 
 item.append(heading, details, message, statusLabel);
     list.appendChild(item);
